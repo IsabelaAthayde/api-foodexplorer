@@ -8,7 +8,7 @@ const knex = require('../database/knex');
 class MealsControllers {
     async create(request, response) {
         const { title, description, price, category, tags } = request.body;
-        const { user_id } = request.params;
+        const user_id = request.user.id;
 
         const database = await sqliteConnection();
         const checkIfFoodExists = await database.get('SELECT * FROM meals WHERE title = (?)', [title])
@@ -46,7 +46,7 @@ class MealsControllers {
     }
 
     async update(request, response) {
-        const { title, description, price, category, tags } = request.body;
+        const { title, description, price, category} = request.body;
         const { id } = request.params;
 
         const meal_id = await knex('meals').where({ id }).first()
@@ -70,10 +70,10 @@ class MealsControllers {
     }
 
     async show(request, response) {
-        const { id } = request.params;
+        const { category } = request.query;
 
-        const meal = await knex('meals').where({ id }).first();
-        const tags = await knex('tags').where({ meal_id: id }).orderBy("name")
+        const meal = await knex('meals').where({ category });
+        const tags = await knex('tags').where({ meal_id: meal.id }).orderBy("name")
 
         if(!meal) {
             throw new AppError("prato não existente")
@@ -86,7 +86,7 @@ class MealsControllers {
     }
 
     async index(request, response) {
-        const { user_id } = request.query;
+        const user_id = request.user.id;
 
         const meal = await knex('meals').where({ user_id }).orderBy("title");
 
