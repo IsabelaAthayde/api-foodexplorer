@@ -53,8 +53,8 @@ class UsersControllers {
             user.password = await hash(password, 8);
         }
 
-        user.name = name || user.name;
-        user.email = email || user.email;
+        user.name = name ?? user.name;
+        user.email = email ?? user.email;
 
          await database.run(
         `UPDATE users SET 

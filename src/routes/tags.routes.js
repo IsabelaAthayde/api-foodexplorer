@@ -2,10 +2,10 @@ const { Router } = require('express');
 
 const tagsRoutes = Router();
 
-const TagsControllers = require('../controllers/TagsControllers.js');
+const TagsController = require('../controllers/TagsController.js');
 
-const tagsControllers = new TagsControllers();
+const tagsController = new TagsController();
 
-tagsRoutes.get("/:meal_id", tagsControllers.index)
+tagsRoutes.get("/:meal_id", tagsController.index)
 
 module.exports = tagsRoutes;

@@ -2,14 +2,14 @@ const { Router } = require('express');
 
 const mealsRoutes = Router();
 
-const MealsControllers = require('../controllers/MealsControllers.js');
+const MealsController = require('../controllers/MealsController.js');
 
-const mealsControllers = new MealsControllers();
+const mealsController = new MealsController();
 
-mealsRoutes.get("/", mealsControllers.index)
-mealsRoutes.post("/:user_id", mealsControllers.create)
-mealsRoutes.put("/:id", mealsControllers.update)
-mealsRoutes.get("/:id", mealsControllers.show)
-mealsRoutes.delete("/:id", mealsControllers.delete)
+mealsRoutes.get("/", mealsController.index)
+mealsRoutes.post("/:user_id", mealsController.create)
+mealsRoutes.put("/:id", mealsController.update)
+mealsRoutes.get("/:id", mealsController.show)
+mealsRoutes.delete("/:id", mealsController.delete)
 
 module.exports = mealsRoutes;
