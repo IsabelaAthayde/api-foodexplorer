@@ -6,6 +6,9 @@ const AppError = require('./utils/AppError');
 const express = require('express');
 const routes = require('./routes/index');
 
+const cors = require('cors');
+app.use(cors());
+
 migrationRun();
 
 const app = express();
