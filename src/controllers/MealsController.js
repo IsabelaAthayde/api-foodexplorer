@@ -1,4 +1,5 @@
 const AppError = require('../utils/AppError');
+const DiskStorage  = require('../providers/DiskStorage');
 
 const sqliteConnection = require('../database/sqlite');
 
@@ -50,8 +51,9 @@ class MealsControllers {
         const { id } = request.params;
 
         const meal_id = await knex('meals').where({ id }).first()
+        console.log(id)
+
         const tag = await knex('tags')
-        console.log(tag)
 
         const formatedPrice = parseFloat(price).toFixed(2)
 
@@ -95,6 +97,14 @@ class MealsControllers {
 
     async delete(request, response) {
         const { id } = request.params;
+
+        const diskStorage = new DiskStorage();
+
+        const meal = await knex('meals').where({ id }).first()
+        
+        if(meal.image) {
+            await diskStorage.deleteFile(meal.image);
+        }
 
         await knex('meals').where({ id }).delete();
 
