@@ -7,12 +7,13 @@ const express = require('express');
 const routes = require('./routes/index');
 
 const cors = require('cors');
-app.use(cors());
 
 migrationRun();
 
 const app = express();
 app.use(express.json());
+
+app.use(cors());
 
 app.use("/files", express.static(uploadConfig.UPLOADS_FOLDER));
 

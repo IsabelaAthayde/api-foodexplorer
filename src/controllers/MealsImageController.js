@@ -4,7 +4,7 @@ const AppError = require('../utils/AppError');
 
 class MealsImageController {
     async update(request, response) {
-        const { id } = request.query;
+        const { id } = request.params;
         const mealFilename = request.file.filename;
 
         const diskStorage = new DiskStorage();

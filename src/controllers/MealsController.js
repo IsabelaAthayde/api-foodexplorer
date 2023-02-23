@@ -8,7 +8,8 @@ const knex = require('../database/knex');
 
 class MealsControllers {
     async create(request, response) {
-        const { title, description, price, category, tags } = request.body;
+        const { title, category, price, tags, description } = request.body.mealUpdated;
+
         const user_id = request.user.id;
 
         const database = await sqliteConnection();
@@ -25,9 +26,15 @@ class MealsControllers {
 
         const formatedPrice = parseFloat(price).toFixed(2)
 
+        // const diskStorage = new DiskStorage();
+        // const file = fileUploadForm.filename;
+        // console.log(file)
+
+        // const filename = await diskStorage.saveFile(file);
+
         const meal_id = await knex("meals").insert({
             title,
-            description, 
+            description,
             price: formatedPrice, 
             category,
             user_id
@@ -47,15 +54,14 @@ class MealsControllers {
     }
 
     async update(request, response) {
-        const { title, description, price, category} = request.body;
+        const { title, description, price, category } = request.body;
         const { id } = request.params;
 
         const meal_id = await knex('meals').where({ id }).first()
-        console.log(id)
 
         const tag = await knex('tags')
 
-        const formatedPrice = parseFloat(price).toFixed(2)
+        const formatedPrice = parseFloat(Number(price)).toFixed(2)
 
         if(!meal_id) {
             throw new AppError('não existe este item no cardápio')
@@ -72,27 +78,46 @@ class MealsControllers {
     }
 
     async show(request, response) {
-        const { category } = request.query;
+        const { id } = request.params;
 
-        const meal = await knex('meals').where({ category });
-        const tags = await knex('tags').where({ meal_id: meal.id }).orderBy("name")
-
-        if(!meal) {
-            throw new AppError("prato não existente")
-        }
-
+        const meals = await knex("meals").where({ id }).first();
+        const tags = await knex("tags").where({meal_id: id}).orderBy("name");
         return response.json({
-            ...meal,
-            tags
-        });
+            ...meals, 
+            tags})
     }
 
     async index(request, response) {
         const user_id = request.user.id;
+        const { category , title } = request.query;
 
-        const meal = await knex('meals').where({ user_id }).orderBy("title");
+        let meal;
+        if(category != undefined) {
+            console.log("entrou em category", category)
+                meal = await knex('meals')
+                .where({ category })
+        } else {
+            if(title == undefined) {
+                meal = await knex('meals')
+                .where({ user_id })
 
-        return response.json(meal);
+            } else {
+                meal = await knex('meals')
+                .where({ user_id })
+                .whereLike("meals.title", `%${title}%`)
+                .orderBy("title");
+            }
+        }
+        
+
+        if(!meal) {
+            throw new AppError("prato não existente")
+        }
+        console.log(meal)
+       
+        return response.json([
+            ...meal
+        ]);
     }
 
     async delete(request, response) {

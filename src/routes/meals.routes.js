@@ -20,9 +20,9 @@ mealsRoutes.use(ensureAuthenticated)
 mealsRoutes.get("/", mealsController.index)
 mealsRoutes.post("/", mealsController.create)
 mealsRoutes.put("/:id", mealsController.update)
-mealsRoutes.get("/", mealsController.show)
+mealsRoutes.get("/:id", mealsController.show)
 mealsRoutes.delete("/:id", mealsController.delete)
 
-mealsRoutes.patch("/image" , ensureAuthenticated, upload.single("image"), mealsImageController.update)
+mealsRoutes.patch("/image/:id" , ensureAuthenticated, upload.single("image"), mealsImageController.update)
 
 module.exports = mealsRoutes;
