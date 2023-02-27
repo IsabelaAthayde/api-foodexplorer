@@ -9,7 +9,6 @@ const knex = require('../database/knex');
 class MealsControllers {
     async create(request, response) {
         const { title, category, price, tags, description } = request.body.mealUpdated;
-
         const user_id = request.user.id;
 
         const database = await sqliteConnection();
@@ -24,13 +23,7 @@ class MealsControllers {
             throw new AppError("Preencha todos os campos")
         }
 
-        const formatedPrice = parseFloat(price).toFixed(2)
-
-        // const diskStorage = new DiskStorage();
-        // const file = fileUploadForm.filename;
-        // console.log(file)
-
-        // const filename = await diskStorage.saveFile(file);
+        const formatedPrice = parseFloat(price).toFixed(2);
 
         const meal_id = await knex("meals").insert({
             title,
@@ -93,9 +86,14 @@ class MealsControllers {
 
         let meal;
         if(category != undefined) {
-            console.log("entrou em category", category)
+            if(title == undefined) {
                 meal = await knex('meals')
                 .where({ category })
+            } else {
+                meal = await knex('meals')
+                .where({ category })
+                .whereLike('meals.title', `%${title}%`)
+            }
         } else {
             if(title == undefined) {
                 meal = await knex('meals')

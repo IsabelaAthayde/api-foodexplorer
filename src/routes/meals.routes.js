@@ -14,6 +14,7 @@ const multer = require('multer');
 const uploadConfig = require("../configs/upload");
 
 const upload = multer(uploadConfig.MULTER);
+const image = multer(uploadConfig.MULTER);
 
 mealsRoutes.use(ensureAuthenticated)
 
