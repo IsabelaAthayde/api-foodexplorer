@@ -35,7 +35,7 @@ class UsersControllers {
         }
 
         const existingUser = await database.get('SELECT * FROM users WHERE email = (?)', [email])
-        console.log(existingUser)
+        
         if(existingUser && existingUser.id != user.id) {
             throw new AppError('Esse email já está em uso.');
         }

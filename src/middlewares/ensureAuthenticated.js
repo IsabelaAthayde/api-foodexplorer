@@ -12,14 +12,15 @@ function ensureAuthenticated(request, response, next) {
     const [, token ] = authHeader.split(" ");
 
     try {
-        const { sub: user_id } = verify(token, authConfig.jwt.secret);
-
+        const decoded = verify(token, authConfig.jwt.secret);
+        
         request.user = {
-            id: Number(user_id),
+            role: decoded.role,
+            id: Number(decoded.sub)
         }
-
         return next();
-    } catch {
+    } catch(e) {
+        console.log(e)
         throw new AppError('JWT Token inválido!', 401)
     }
 }
