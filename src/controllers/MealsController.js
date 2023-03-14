@@ -145,6 +145,26 @@ class MealsControllers {
                 meal = await knex('meals')
                 .where({ category })
                 .whereLike('meals.title', `%${title}%`)
+                .groupBy('title');
+
+                const filterTags = title.split(",").map(tag => tag.trim());
+
+                const mealByTags = await knex("tags")
+                .select([
+                    "meals.id",
+                    "meals.title",
+                    "meals.image",
+                    "meals.price",
+                ])
+                .where("meals.category", category)
+                .whereIn("name", filterTags)
+                .innerJoin("meals", "meals.id", "tags.meal_id")
+                .groupBy("meals.title");
+
+                return response.json([
+                    ...mealByTags,
+                    ...meal
+                ]);
             }
         } else {
             if(title == undefined) {
