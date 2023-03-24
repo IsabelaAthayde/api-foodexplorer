@@ -13,14 +13,15 @@ function ensureAuthenticated(request, response, next) {
 
     try {
         const decoded = verify(token, authConfig.jwt.secret);
-        
+
         request.user = {
             role: decoded.role,
-            id: Number(decoded.sub)
+            id: Number(decoded.sub),
+            exp: decoded.exp,
         }
         return next();
     } catch(e) {
-        console.log(e)
+        console.error(e)
         throw new AppError('JWT Token inválido!', 401)
     }
 }
