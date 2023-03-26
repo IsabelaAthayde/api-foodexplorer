@@ -2,6 +2,9 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+var JSEncrypt = require('node-jsencrypt');
+
+const NodeRSA = require('node-rsa');
 
 const cert = fs.readFileSync(
   path.resolve(__dirname, `../../certs/${process.env.GN_CERT}`)
@@ -45,13 +48,14 @@ const GNRequest = async (credentials) => {
   });
 }
 
-const createPaymentToken = async () => {
+const getSaltAndPubKey = async (sandbox) => {
   let salt = await axios.get(`https://tokenizer.gerencianet.com.br/salt`, {'account-code': `${process.env.GN_ACCOUNT_CODE}`})
   .then(function (response) {
     return response;
   })
 
-  let publicKey = await axios.get(`https://sandbox.gerencianet.com.br/v1/pubkey?code=${process.env.GN_ACCOUNT_CODE}`)
+  let publicKey = await axios.get(`${sandbox ? ('https://sandbox.gerencianet.com.br/v1/pubkey?code=') 
+  : ('https://api.gerencianet.com.br/v1/pubkey?code=')}${process.env.GN_ACCOUNT_CODE}`)
   .then(function (response) {
     return response.data;
   })
@@ -82,7 +86,7 @@ const authenticateCardAuthorization = ({clientID, clientSecret}) => {
   });
 };
 
-const GNCardRequest = async (credentials) => {
+const GNCardRequest = async (credentials, sandbox) => {
   const authResponse = await authenticateCardAuthorization(credentials);
   const accessToken = authResponse.data?.access_token;
 
@@ -96,17 +100,40 @@ const GNCardRequest = async (credentials) => {
   });
 }
 
-const generatePaymentToken = async () => {
-  const payment_token = await createPaymentToken();
-    
-  let cardData = {
-    brand,
-    number,
-    cvv,
-    expiration_month,
-    expiration_year,
-    salt: "salt.gerado.aqui",
-    reuse: 1
+const encryptCardData = async (cardData, saltTokenizer, publicKey) => {
+  cardData.salt = saltTokenizer;
 
+  console.log('cardData' + JSON.stringify(cardData));
+  let crypt = await new JSEncrypt();
+
+  try {
+      await crypt.setPublicKey(publicKey);
+      var encryptedCardData = await crypt.encrypt(JSON.stringify(cardData));
+
+      return encryptedCardData;
+  } catch (e) {
+      console.error(e)
+      alert('erro ao criptografar dados')
+  }
 }
-module.exports = {GNRequest, createPaymentToken, GNCardRequest};
+
+const generatePaymentToken = async (cardData, account_identifier, sandbox) => {
+  const saltAndPubKey = await getSaltAndPubKey(sandbox);
+
+  let encryptedData = await encryptCardData(cardData, saltAndPubKey.salt.data.data, saltAndPubKey.publicKey.data);
+
+  let dataResponse = await axios({
+    'method': 'POST',
+    'url': `${ sandbox ? ('https://sandbox.gerencianet.com.br/v1/card') : ('https://tokenizer.gerencianet.com.br/card')}`,
+    'headers': {
+      'account-code': account_identifier,
+      'Content-Type': 'application/json'
+    },
+    data: JSON.stringify({ "data": encryptedData })
+  })
+  .catch((err) => console.error(err));
+
+  return dataResponse.data;
+}
+
+module.exports = {GNRequest, GNCardRequest, generatePaymentToken};

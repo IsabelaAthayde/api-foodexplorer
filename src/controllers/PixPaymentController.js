@@ -9,7 +9,7 @@ const reqGNAlready = GNRequest({
   clientSecret: process.env.GN_CLIENT_SECRET
 });
 
-class PaymentController {
+class PixPaymentController {
   async create(req, res) {
     const { price } = req.body;
       const reqGN = await reqGNAlready;
@@ -18,7 +18,7 @@ class PaymentController {
           expiracao: 3600
         },
         valor: {
-          original: price
+          original: "0.01"
         },
         chave: 'a1f3e115-02ea-4dcd-be23-551b0a0bfca6',
         solicitacaoPagador: 'Cobrança dos serviços prestados.'
@@ -26,6 +26,7 @@ class PaymentController {
     
       const cobResponse = await reqGN.post('/v2/cob', dataCob);
       const qrcodeResponse = await reqGN.get(`/v2/loc/${cobResponse.data.loc.id}/qrcode`);
+      console.log(cobResponse.data, "<<<<--->>>>", qrcodeResponse.data)
 
       return res.send([qrcodeResponse.data])
   }
@@ -53,4 +54,4 @@ class PaymentController {
   }
 }
 
-module.exports = PaymentController;
+module.exports = PixPaymentController;

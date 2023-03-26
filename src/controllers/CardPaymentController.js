@@ -4,13 +4,11 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
-const axios = require('axios');
-const {hash} = require('bcryptjs');
+const token = require('../configs/payment_token');
+const sandbox = true;
+const account_identifier = process.env.GN_ACCOUNT_CODE;
 
-const AppError = require('../utils/AppError');
-
-const {createPaymentToken, GNCardRequest, authenticateCardAuthorization} = require('../configs/gerencianet.js');
-
+const {generatePaymentToken, GNCardRequest} = require('../configs/gerencianet.js');
 const reqGNAlready = GNCardRequest({
   clientID: process.env.GN_CLIENT_ID,
   clientSecret: process.env.GN_CLIENT_SECRET
@@ -18,10 +16,25 @@ const reqGNAlready = GNCardRequest({
 
 class CardPaymentController {
   async create(req, res) {
-    const {street, number, neighborhood, zipcode, city, state, name, email, cpf, birth, phone_number} = req.body.data;
+    const {street, number, neighborhood, zipcode,
+    city, state, name, email, cpf, birth, phone_number,
+    brand, cardNumber, expiration_month, expiration_year, cvc } = req.body.data;
     const cartItems = req.body.items;
 
     const reqGN = await reqGNAlready;
+    var cardData = new Object();
+
+    cardData = {
+      brand,
+      number: cardNumber,
+      cvv: cvc,
+      expiration_month,
+      expiration_year,
+      reuse: true
+    }
+
+    const token = await generatePaymentToken(cardData, process.env.GN_ACCOUNT_CODE, sandbox)
+    const {payment_token, card_mask} = token.data;
 
     try{
       const body = {
@@ -35,7 +48,7 @@ class CardPaymentController {
               phone_number
             },
             installments: 1,
-            payment_token: 'cd79b344c2da4f00af6396f56d694a08ed251057',
+            payment_token,
             billing_address: {
               street,
               number,
@@ -62,42 +75,6 @@ class CardPaymentController {
       console.error(e)
     }
   }
-
-  async created(req, res) {
-    const {brand, number, cvv, expiration_month, expiration_year } = req.body;
-    const reqGN = await reqGNAlready;
-
-    
-    // let cardData = {
-    //   "brand":"mastercard",
-    //   "number":"4539161853069500",
-    //   "cvv":"762",
-    //   "expiration_month":"02",
-    //   "expiration_year":"2022",
-    //   "salt":payment_token.salt.data,
-    //   "reuse":"1"
-    // };
-      
-      const encryptCardData = JSON.stringify(cardData);
-      // if(!encryptCardData) {hash(JSON.stringify(cardData), 16)
-      //   new AppError("Erro ao ler os dados, tente novamente mais tarde!");
-      // }
-        // let encryptedCardData =JSON.stringify(cardData);
-        // console.log(encryptCardData, 'aaaaaaaaaaaaaaa<<<<<<', String(encryptCardData));
-
-      // const axiosconfig = { 
-      //   headers: {
-      //     'account-code': `${process.env.GN_ACCOUNT_CODE}`,
-      //     'Content-Type': 'application/json;charset=UTF-8'
-      //   }
-      // }
-      // const cardTokenRes = await reqGN.post('/card', , axiosconfig)
-      // .then((res) => {
-      //   console.log("RESPONSE RECEIVED: ", res);
-      // })
-      // .catch((err) => {
-      //   console.log("AXIOS ERROR: ", err);
-      // })
 
 }
 
