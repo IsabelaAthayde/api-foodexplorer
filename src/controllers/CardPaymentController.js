@@ -4,7 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
-const sandbox = true;
+const sandbox = false;
 
 const {generatePaymentToken, GNCardRequest} = require('../configs/gerencianet.js');
 const reqGNAlready = GNCardRequest({
