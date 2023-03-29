@@ -89,7 +89,7 @@ const GNCardRequest = async (credentials, sandbox) => {
   const accessToken = authResponse.data?.access_token;
 
   return axios.create({
-    baseURL: 'https://sandbox.gerencianet.com.br',
+    baseURL: `${ sandbox ? ('https://sandbox.gerencianet.com.br') : ('https://api.gerencianet.com.br')}`,
     httpsAgent: agent,
     headers: {
       Authorization: `Bearer ${accessToken}`,
