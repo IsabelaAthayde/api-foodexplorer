@@ -22,7 +22,7 @@ class PixPaymentController {
         valor: {
           original: String(price)
         },
-        chave: 'a1f3e115-02ea-4dcd-be23-551b0a0bfca6',
+        chave: 'isabelaoa15@gmail.com',
         solicitacaoPagador: 'Cobrança dos serviços prestados.'
       };
     
