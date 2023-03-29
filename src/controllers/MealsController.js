@@ -23,8 +23,8 @@ class MealsControllers {
             throw new AppError("Preencha todos os campos")
         }
 
-        const formatedPrice = Number(parseFloat(price).toFixed(2));
-        
+        const formatedPrice = (Math.round(parseFloat(price) * 100) / 100).toFixed(2);
+
         if(formatedPrice === NaN) {
             throw new AppError("Preencha o preço corretamente")
         }
@@ -32,7 +32,7 @@ class MealsControllers {
         const meal_id = await knex("meals").insert({
             title,
             description,
-            price: formatedPrice, 
+            price: String(formatedPrice), 
             category,
             user_id
         });
@@ -60,10 +60,11 @@ class MealsControllers {
             throw new AppError('não existe este item no cardápio')
         }
         let newPrice;
-        if(price === NaN || price === undefined) {
+        if(price === '0' || price === undefined) {
             newPrice = meal.price
         } else {
-            newPrice = Number(price)
+            newPrice = String((Math.round(parseFloat(price) * 100) / 100).toFixed(2));
+            console.log(newPrice);
         }
 
         await knex("meals").where({ id }).update({
@@ -87,12 +88,9 @@ class MealsControllers {
         .where('meal_id', id)
         .del()
         .then(async () => {
-            console.log('missing tags')
-
             let newTag = [];
             for(const tag of tagsUpdates) {
                 const rows = await knex('tags').where('name', tag.name).select('id');
-                console.log(rows, tag.name)
 
                 if(rows === [] || rows.length === 0) {
                 console.log(tag.name)
@@ -106,19 +104,6 @@ class MealsControllers {
         .catch((err) => {
             console.error(err)
         })
-
-        // const newTags = tagsUpdates.filter((tag) => {
-        //     const tagsf = await knex('tags').where('name', tag.name).select('id').then((rows) => {
-        //         return rows.lenght === 0;
-        //     })
-        // })
-        // const Tags = await knex('tags').where('meal_id', id).whereIn('name', tagsUpdates.map(tag => tag.name))
-
-        //     const newtags = tagsUpdates.filter(tag => {
-        //         Tags.includes(tag.name)
-        //     })
-            
-        // console.log(tagsUpdates)
 
         return response.json();
     }

@@ -4,9 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
-const token = require('../configs/payment_token');
 const sandbox = true;
-const account_identifier = process.env.GN_ACCOUNT_CODE;
 
 const {generatePaymentToken, GNCardRequest} = require('../configs/gerencianet.js');
 const reqGNAlready = GNCardRequest({
@@ -35,6 +33,7 @@ class CardPaymentController {
 
     const token = await generatePaymentToken(cardData, process.env.GN_ACCOUNT_CODE, sandbox)
     const {payment_token, card_mask} = token.data;
+    console.log(token.data, "pa:", payment_token, card_mask)
 
     try{
       const body = {
@@ -48,7 +47,7 @@ class CardPaymentController {
               phone_number
             },
             installments: 1,
-            payment_token,
+            payment_token: payment_token,
             billing_address: {
               street,
               number,
@@ -68,7 +67,6 @@ class CardPaymentController {
       }
 
       let cobRES = await reqGN.post('/v1/charge/one-step', body)
-      console.log(cobRES)
 
       return res.json(cobRES.data)
     } catch(e) {

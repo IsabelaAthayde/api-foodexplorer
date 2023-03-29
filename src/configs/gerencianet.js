@@ -4,8 +4,6 @@ const path = require('path');
 const https = require('https');
 var JSEncrypt = require('node-jsencrypt');
 
-const NodeRSA = require('node-rsa');
-
 const cert = fs.readFileSync(
   path.resolve(__dirname, `../../certs/${process.env.GN_CERT}`)
 );

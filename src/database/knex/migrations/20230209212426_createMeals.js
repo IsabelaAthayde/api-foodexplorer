@@ -4,7 +4,7 @@ exports.up = knex => knex.schema.createTable("meals", table => {
     table.text("image");
     table.text("title");
     table.text("description");
-    table.decimal("price", 9, 2).default(0).notNullable();
+    table.text("price").default('0').notNullable();
     table.text("category");
     table.integer("user_id").references("id").inTable("users");
 
