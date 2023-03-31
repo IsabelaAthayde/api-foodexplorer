@@ -23,7 +23,8 @@ class PixPaymentController {
         valor: {
           original: String(price)
         },
-        chave: '5b92ff2b-02e1-485f-8d9d-b6bdc99ffa4b',
+        chave: 'a1f3e115-02ea-4dcd-be23-551b0a0bfca6',
+        solicitacaoPagador: 'Cobrança dos serviços prestados.'
       };
     
       const cobResponse = await reqGN.post('/v2/cob', dataCob);
