@@ -113,6 +113,13 @@ class MealsControllers {
 
         const meals = await knex("meals").where({ id }).first();
         const tags = await knex("tags").where({meal_id: id}).orderBy("name");
+
+        if(!meals) {
+            return response.json({
+                error: "non existent"
+            })
+        }
+
         return response.json({
             ...meals, 
             tags})

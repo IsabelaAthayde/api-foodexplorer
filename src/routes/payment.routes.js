@@ -14,7 +14,7 @@ const cardPaymentController = new CardPaymentController;
 paymentRoutes.use(ensureAuthenticated)
   
 paymentRoutes.post('/', pixPaymentController.create);
-paymentRoutes.get('/cobrancas', pixPaymentController.index);
+paymentRoutes.get('/cob', pixPaymentController.index);
 paymentRoutes.get('/webhook(/pix)?', pixPaymentController.show);
 
 paymentRoutes.post('/card', cardPaymentController.create);
