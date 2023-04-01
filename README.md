@@ -16,6 +16,8 @@ Porém não é permitido as funções exclusivas do admin.
 ### 📁 Acesso ao projeto
 Você pode acessar os arquivos do projeto clicando [aqui](https://github.com/gui-lirasilva/Edige-POO/tree/master/src).
 
+#### Ou teste o projeto [aqui](https://best-foodexplorer.netlify.app/)
+
 ## ✔️ Técnicas e tecnologias utilizadas
 - `NodeJs`
 - `Javascript`
