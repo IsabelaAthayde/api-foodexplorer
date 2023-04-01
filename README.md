@@ -21,6 +21,6 @@ Você pode acessar os arquivos do projeto clicando [aqui](https://github.com/gui
 ## ✔️ Técnicas e tecnologias utilizadas
 - `NodeJs`
 - `Javascript`
-- `Gerencianet Efi`: utilizado para realizar as transações.
+- `Gerencianet Efi api`: utilizado para realizar as transações.
 
 <img src='https://img.shields.io/badge/last%20updated-março-brightgreen'></img>
