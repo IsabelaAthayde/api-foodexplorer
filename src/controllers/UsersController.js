@@ -66,7 +66,13 @@ class UsersControllers {
 
         users = await knex('users')
 
-        return response.status(202).json();
+        if(!users) {
+            throw new AppError("Usuários não existentes")
+        }
+
+        return response.json([
+            ...users
+        ]);
     }
 }
 
