@@ -61,6 +61,13 @@ class UsersControllers {
 
          return response.status(202).json();
     }
+
+    async show(request, response) {
+
+        users = await knex('users')
+
+        return response.status(202).json();
+    }
 }
 
 module.exports = UsersControllers;
